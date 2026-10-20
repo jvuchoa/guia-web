@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fundamentos de Aplicações Web — Guia de Estudos</title>
+<style>
+:root {
+  --ink: #26334a; --muted: #65738a; --paper: #fbfcff; --line: #e4eaf2;
+  --blue: #eaf2ff; --blue-ink: #315c9b; --mint: #e8f7f0; --mint-ink: #28785a;
+  --lavender: #f1edff; --lavender-ink: #6951a6; --peach: #fff0e6; --peach-ink: #a75a32;
+  --yellow: #fff8dc; --yellow-ink: #8b6b17; --rose: #ffedf1; --rose-ink: #a54f68;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; background: #f4f7fb; color: var(--ink);
+  font: 16px/1.72 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.hero {
+  padding: 58px 24px 48px; background: linear-gradient(135deg, #eaf2ff 0%, #f5f0ff 52%, #e8f7f0 100%);
+  border-bottom: 1px solid #e1e8f1;
+}
+.hero-inner, main { max-width: 920px; margin: 0 auto; }
+.eyebrow {
+  display: inline-block; padding: 5px 11px; border-radius: 999px;
+  background: rgba(255,255,255,.8); color: #5c6f91; font-size: 12px; font-weight: 750;
+  letter-spacing: .09em; text-transform: uppercase;
+}
+h1 { max-width: 760px; margin: 18px 0 12px; font-size: clamp(2.1rem, 5vw, 3.5rem); line-height: 1.08; letter-spacing: -.045em; }
+.hero p { max-width: 700px; margin: 0; color: #59677f; font-size: 1.08rem; }
+.chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:24px; }
+.chip { border:1px solid rgba(91,112,148,.16); border-radius:999px; padding:6px 12px; background:rgba(255,255,255,.72); font-size:13px; color:#52627d; }
+main { padding: 28px 22px 70px; }
+.toc { background:white; border:1px solid var(--line); border-radius:18px; padding:22px 24px; margin:0 0 24px; box-shadow:0 8px 24px rgba(37,55,87,.035); }
+.toc h2 { margin:0 0 10px; font-size:1.05rem; }
+.toc ul { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:5px 20px; margin:0; padding-left:20px; }
+.toc a { color:#496ba5; text-decoration:none; }
+section {
+  background:white; border:1px solid var(--line); border-radius:18px; padding:28px clamp(20px,4vw,36px);
+  margin:18px 0; box-shadow:0 8px 24px rgba(37,55,87,.035); scroll-margin-top:20px;
+}
+h2 { font-size:1.55rem; line-height:1.25; letter-spacing:-.025em; margin:0 0 18px; }
+h3 { font-size:1.12rem; margin:24px 0 8px; color:#344662; }
+h4 { margin:18px 0 6px; }
+p { margin:10px 0; }
+ul, ol { padding-left:24px; }
+li { margin:4px 0; }
+strong { color:#293b57; }
+blockquote { margin:18px 0; padding:14px 18px; border-left:4px solid #9cb9ed; background:var(--blue); border-radius:0 12px 12px 0; color:#38547e; }
+table { border-collapse:separate; border-spacing:0; width:100%; margin:18px 0; font-size:.94rem; border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+th { background:#edf3fc; color:#405777; text-align:left; font-weight:700; }
+th, td { padding:11px 13px; border-bottom:1px solid var(--line); vertical-align:top; }
+tr:last-child td { border-bottom:0; }
+tbody tr:nth-child(even) td { background:#fbfcff; }
+pre { background:#f1f4fa; border:1px solid var(--line); border-radius:12px; padding:14px 16px; overflow-x:auto; font-size:.88rem; line-height:1.55; margin:14px 0; }
+pre code { background:none; border:0; padding:0; color:#344662; font-size:inherit; }
+hr { border:0; border-top:1px solid var(--line); margin:28px 0; }
+code { background:#f1f4fa; border:1px solid #e5eaf2; border-radius:5px; padding:2px 5px; font-size:.9em; color:#6951a6; }
+section:nth-of-type(3n+1) h2 { color:var(--blue-ink); }
+section:nth-of-type(3n+2) h2 { color:var(--mint-ink); }
+section:nth-of-type(3n) h2 { color:var(--lavender-ink); }
+section:last-of-type { background:linear-gradient(135deg,#fff8dc,#fff); }
+footer { text-align:center; color:#7b8799; padding:0 20px 34px; font-size:13px; }
+@media (max-width:600px) {
+  .hero { padding:38px 20px 32px; }
+  main { padding:18px 12px 42px; }
+  section { padding:22px 17px; }
+  table { display:block; overflow-x:auto; }
+}
+@media print {
+  body { background:white; }
+  .hero { padding:30px; }
+  section,.toc { box-shadow:none; break-inside:avoid; }
+}
+.theme-toggle { position:fixed; top:14px; right:14px; z-index:10; width:62px; height:34px; padding:0; border-radius:999px; border:1px solid #c9d5e6; background:#dfe8f5; cursor:pointer; transition:background .25s, border-color .25s; }
+.theme-toggle .ico { position:absolute; top:50%; transform:translateY(-50%); font-size:14px; line-height:1; pointer-events:none; }
+.theme-toggle .sun { left:9px; }
+.theme-toggle .moon { right:9px; }
+.theme-toggle .thumb { position:absolute; top:3px; left:3px; width:26px; height:26px; border-radius:50%; background:#fff; box-shadow:0 1px 4px rgba(37,55,87,.3); transition:transform .25s, background .25s; }
+.theme-toggle[aria-checked="true"] { background:#2f4a7a; border-color:#3d5c93; }
+.theme-toggle[aria-checked="true"] .thumb { transform:translateX(28px); background:#dbe4f3; }
+.theme-toggle:focus-visible { outline:2px solid #6c97e6; outline-offset:2px; }
+@media (prefers-reduced-motion: reduce) { .theme-toggle, .theme-toggle .thumb { transition:none; } }
+@media print { .theme-toggle { display:none; } }
+@media screen {
+html[data-theme="dark"] { color-scheme:dark; --ink:#dbe4f3; --muted:#9aa8bf; --paper:#161c27; --line:#2a3446; }
+html[data-theme="dark"] body { background:#0f141c; }
+html[data-theme="dark"] .hero { background:linear-gradient(135deg,#17233a 0%,#211b38 52%,#142b25 100%); border-bottom-color:#2a3446; }
+html[data-theme="dark"] .eyebrow { background:rgba(255,255,255,.08); color:#a9bbdc; }
+html[data-theme="dark"] .hero p { color:#a9b6cc; }
+html[data-theme="dark"] .chip { background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.14); color:#b7c4dc; }
+html[data-theme="dark"] .toc { background:#161c27; box-shadow:none; }
+html[data-theme="dark"] .toc a { color:#8fb2ee; }
+html[data-theme="dark"] h3 { color:#c3d1ea; }
+html[data-theme="dark"] strong { color:#eef3fb; }
+html[data-theme="dark"] blockquote { background:#1a2538; border-left-color:#4f78c0; color:#b9cdee; }
+html[data-theme="dark"] th { background:#1d2738; color:#b7c7e2; }
+html[data-theme="dark"] tbody tr:nth-child(even) td { background:#131a25; }
+html[data-theme="dark"] code { background:#1d2738; border-color:#2f3b50; color:#c3b2f0; }
+html[data-theme="dark"] pre { background:#121926; }
+html[data-theme="dark"] pre code { background:none; color:#d3def0; }
+html[data-theme="dark"] footer { color:#8794ab; }
+}
+
+:root { --q-hover:#f5f8fe; --q-sel:#eaf2ff; --q-ok:#e8f7f0; --q-bad:#ffedf1; --q-res:#fbfcff; --q-btn:#315c9b; }
+.quiz-progress { display:flex; align-items:center; gap:14px; flex-wrap:wrap; font-size:.95rem; color:var(--muted); margin:6px 0 4px; }
+.quiz-progress .bar { flex:1; min-width:140px; height:8px; border-radius:99px; background:var(--line); overflow:hidden; }
+.quiz-progress .bar div { height:100%; width:0; background:#6c97e6; transition:width .25s; }
+form#quiz-form { margin:0; }
+.q { border:1px solid var(--line); border-radius:14px; padding:12px 16px 10px; margin:14px 0; min-width:0; }
+.q legend { font-weight:700; padding:0 8px; max-width:100%; }
+.opt { display:flex; gap:10px; align-items:flex-start; padding:9px 12px; border:1px solid var(--line); border-radius:10px; margin:6px 0; cursor:pointer; }
+.opt:hover { background:var(--q-hover); }
+.opt input { margin-top:6px; accent-color:#4f78c0; flex:none; }
+.opt.sel { border-color:#6c97e6; background:var(--q-sel); }
+.quiz.done .opt { cursor:default; }
+.opt.right { border-color:#28785a; background:var(--q-ok); }
+.opt.wrong { border-color:#a54f68; background:var(--q-bad); }
+.opt.right span::after { content:" — resposta correta"; font-weight:700; color:#28785a; }
+.opt.wrong span::after { content:" — sua resposta"; font-weight:700; color:#a54f68; }
+.quiz-actions { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:18px 0 6px; }
+.btn { font:inherit; font-weight:650; padding:10px 18px; border-radius:10px; border:1px solid var(--q-btn); background:var(--q-btn); color:#fff; cursor:pointer; }
+.btn.ghost { background:transparent; color:var(--q-btn); }
+.btn:disabled { opacity:.45; cursor:not-allowed; }
+.btn:focus-visible { outline:2px solid #6c97e6; outline-offset:2px; }
+.quiz-actions .hint { font-size:.88rem; color:var(--muted); }
+.result { border:1px solid var(--line); border-radius:16px; padding:20px 22px; margin:18px 0 0; background:var(--q-res); }
+.result .score { font-size:2.1rem; font-weight:800; line-height:1.2; }
+.result .score small { font-size:1rem; font-weight:600; color:var(--muted); }
+.result h3 { margin-top:20px; }
+.result .miss { border-top:1px solid var(--line); padding:10px 0; font-size:.95rem; }
+@media screen { html[data-theme="dark"] { --q-hover:#1a2333; --q-sel:#1d2d4a; --q-ok:#14302a; --q-bad:#3a1f2a; --q-res:#161c27; --q-btn:#4f78c0; }
+html[data-theme="dark"] .opt.right span::after { color:#6fd0a7; }
+html[data-theme="dark"] .opt.wrong span::after { color:#f08aa5; }
+html[data-theme="dark"] .btn.ghost { color:#8fb2ee; } }
+@media print { .quiz-actions { display:none; } }
+</style>
+<script>
+(function(){var t;try{t=localStorage.getItem('tema-guia');}catch(e){}
+if(!t){t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}
+document.documentElement.setAttribute('data-theme',t);})();
+</script>
+</head>
+<body>
+<button class="theme-toggle" id="theme-toggle" type="button" role="switch" aria-checked="false" aria-label="Modo escuro"><span class="ico sun" aria-hidden="true">☀️</span><span class="ico moon" aria-hidden="true">🌙</span><span class="thumb" aria-hidden="true"></span></button>
+<header class="hero">
+  <div class="hero-inner">
+    <span class="eyebrow">Guia de estudos · Desenvolvimento Web</span>
+    <h1>Fundamentos de Aplicações Web</h1>
+    <p>Um guia visual para entender como aplicações web são organizadas, como seus componentes se comunicam e quais ferramentas ajudam a desenvolver, testar e publicar software.</p>
+    <div class="chips">
+      <span class="chip">Arquitetura</span><span class="chip">APIs e serviços</span><span class="chip">CI/CD</span><span class="chip">Ferramentas</span><span class="chip">Revisão</span>
+    </div>
+  </div>
+</header>
+<main>
+<nav class="toc" aria-label="Sumário">
+<h2>Navegue pelo conteúdo</h2>
+<ul>
+<li><a href="#domínio-da-aplicação">1. Domínio da aplicação</a></li>
+<li><a href="#momentos-e-partes-de-uma-aplicação">2. Partes e ambientes</a></li>
+<li><a href="#tipos-de-aplicações-e-arquitetura">3. Tipos e arquitetura</a></li>
+<li><a href="#apis-conceitos-básicos">4. APIs: conceitos básicos</a></li>
+<li><a href="#repositório-e-controle-de-versão">5. Repositório e Git</a></li>
+<li><a href="#cicd">6. CI/CD</a></li>
+<li><a href="#frameworks-x-bibliotecas">7. Frameworks e bibliotecas</a></li>
+<li><a href="#livros-recomendados">8. Livros recomendados</a></li>
+<li><a href="#resumo-para-revisão">9. Resumo para revisão</a></li>
+<li><a href="#glossário-de-siglas">10. Glossário de siglas</a></li>
+<li><a href="#perguntas-para-testar-o-conhecimento">11. Perguntas de revisão</a></li>
+</ul>
+</nav>
+
+<h1 id="fundamentos-de-aplicações-web">Fundamentos de Aplicações
+Web</h1>
+<blockquote>
+<p>Guia de consulta para conceitos essenciais de desenvolvimento web,
+arquitetura, deploy e ferramentas de desenvolvimento.</p>
+</blockquote>
+<h2 id="domínio-da-aplicação">1. Domínio da aplicação</h2>
+<p>O <strong>domínio da aplicação</strong> é o conjunto de conceitos,
+regras e informações do negócio que o sistema representa. Ele define o
+que a aplicação precisa fazer e quais regras deve respeitar.</p>
+<p><strong>Exemplo:</strong> em um sistema de agendamento, o domínio
+pode incluir clientes, profissionais, horários disponíveis, agendamentos
+e regras para cancelamento.</p>
+<p><strong>Para lembrar:</strong> domínio = regras e conceitos do
+negócio.</p>
+<hr />
+<h2 id="momentos-e-partes-de-uma-aplicação">2. Momentos e partes de uma
+aplicação</h2>
+<p>Uma aplicação web costuma ter diferentes partes e ambientes.</p>
+<h3 id="localhost">Localhost</h3>
+<p><strong>Localhost</strong> é o próprio computador onde a aplicação
+está sendo executada. É muito usado durante o desenvolvimento e os
+testes locais.</p>
+<h3 id="client-cliente">Client (cliente)</h3>
+<p>É a parte com a qual o usuário interage ou o dispositivo que faz as
+requisições ao servidor.</p>
+<ul>
+<li><strong>Front-end:</strong> interface visual da aplicação, como
+páginas, formulários, botões e telas.</li>
+<li><strong>Mobile:</strong> aplicativo desenvolvido para dispositivos
+móveis. Ele também pode consumir uma API de back-end.</li>
+</ul>
+<h3 id="server-servidor-back-end">Server (servidor / back-end)</h3>
+<p>É a parte que recebe requisições, executa regras de negócio, acessa
+dados e devolve respostas.</p>
+<p>O back-end pode: - aplicar as regras de negócio; - servir e processar
+dados; - comunicar-se com outros back-ends e APIs; - integrar-se com
+ferramentas de IA; - acessar sistemas de banco de dados.</p>
+<h3 id="cloud-nuvem">Cloud (nuvem)</h3>
+<p>É o uso de infraestrutura e serviços disponibilizados pela internet
+para executar, armazenar ou gerenciar aplicações.</p>
+<p><strong>Exemplos de plataformas e serviços citados no mapa:</strong>
+- AWS (Amazon Web Services) - GCP (Google Cloud Platform) - Oracle Cloud
+- Vercel - Railway</p>
+<h3 id="deploy">Deploy</h3>
+<p><strong>Deploy</strong> é o processo de disponibilizar uma versão da
+aplicação em um ambiente, por exemplo, para que usuários possam
+acessá-la pela internet. Dependendo do projeto, pode envolver publicar o
+front-end, o back-end e configurar banco de dados e variáveis de
+ambiente.</p>
+<p><strong>Fluxo simplificado:</strong> desenvolver localmente → testar
+→ publicar (deploy) → usuários acessam.</p>
+<hr />
+<h2 id="tipos-de-aplicações-e-arquitetura">3. Tipos de aplicações e
+arquitetura</h2>
+<h3 id="aplicações-crud">Aplicações CRUD</h3>
+<p>CRUD representa quatro operações básicas de manipulação de dados:</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Sigla</th>
+<th style="text-align: left;">Termo em inglês</th>
+<th style="text-align: left;">Significado</th>
+<th style="text-align: left;">Exemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">C</td>
+<td style="text-align: left;">Create</td>
+<td style="text-align: left;">Criar</td>
+<td style="text-align: left;">Cadastrar um cliente</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">R</td>
+<td style="text-align: left;">Read</td>
+<td style="text-align: left;">Ler/consultar</td>
+<td style="text-align: left;">Listar clientes</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">U</td>
+<td style="text-align: left;">Update</td>
+<td style="text-align: left;">Atualizar</td>
+<td style="text-align: left;">Alterar os dados de um cliente</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">D</td>
+<td style="text-align: left;">Delete</td>
+<td style="text-align: left;">Excluir</td>
+<td style="text-align: left;">Remover um cadastro</td>
+</tr>
+</tbody>
+</table>
+<p>Essas operações são comuns em sistemas de cadastro, estoque,
+agendamento e administração.</p>
+<h3 id="web-services">Web services</h3>
+<p>Um <strong>web service</strong> é uma forma de um sistema
+disponibilizar funcionalidades ou dados para que outro sistema se
+comunique com ele por uma rede, normalmente usando padrões e protocolos
+definidos.</p>
+<p>Exemplo: o front-end envia uma requisição HTTP para uma API; o
+servidor processa a solicitação e devolve uma resposta em JSON.</p>
+<p><strong>Importante:</strong> web service descreve uma forma de
+comunicação entre sistemas. Não é, por si só, um estilo de arquitetura
+como microsserviços.</p>
+<h3 id="microsserviços">Microsserviços</h3>
+<p>Em uma arquitetura de <strong>microsserviços</strong>, a aplicação é
+dividida em serviços menores, com responsabilidades específicas. Esses
+serviços podem ser desenvolvidos, implantados e escalados de forma
+relativamente independente.</p>
+<p>Exemplo em um e-commerce: - serviço de usuários; - serviço de
+produtos; - serviço de pedidos; - serviço de pagamentos.</p>
+<p>Os serviços precisam se comunicar e a arquitetura exige atenção à
+rede, segurança, monitoramento, consistência de dados e implantação.</p>
+<p><strong>Vantagem possível:</strong> cada serviço pode evoluir ou
+escalar de acordo com sua necessidade.</p>
+<p><strong>Custo possível:</strong> há mais complexidade operacional e
+de comunicação entre componentes.</p>
+<h3 id="monólito">Monólito</h3>
+<p>Em uma arquitetura <strong>monolítica</strong>, as principais
+funcionalidades do sistema ficam reunidas em uma única aplicação
+implantável. Isso não significa necessariamente que o código seja
+desorganizado: um monólito pode ter módulos e uma boa separação de
+responsabilidades.</p>
+<p><strong>Vantagens comuns:</strong> simplicidade inicial,
+desenvolvimento e implantação mais diretos.</p>
+<p><strong>Desafios possíveis:</strong> com o crescimento do sistema,
+mudanças e escalabilidade podem ficar mais difíceis se os módulos
+estiverem muito acoplados.</p>
+<h3 id="comparação-rápida">Comparação rápida</h3>
+<table style="width:97%;">
+<colgroup>
+<col style="width: 32%" />
+<col style="width: 32%" />
+<col style="width: 32%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Conceito</th>
+<th style="text-align: left;">O que descreve?</th>
+<th style="text-align: left;">Exemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">CRUD</td>
+<td style="text-align: left;">Operações sobre dados</td>
+<td style="text-align: left;">Criar, consultar, atualizar e excluir
+produtos</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Web service</td>
+<td style="text-align: left;">Comunicação entre sistemas</td>
+<td style="text-align: left;">Uma API HTTP que retorna dados em
+JSON</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Microsserviços</td>
+<td style="text-align: left;">Organização da aplicação em serviços
+menores</td>
+<td style="text-align: left;">Serviços separados para pedidos e
+pagamentos</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Monólito</td>
+<td style="text-align: left;">Aplicação reunida em uma unidade principal
+de implantação</td>
+<td style="text-align: left;">Uma API que contém módulos de produtos,
+clientes e pedidos</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Como os conceitos se relacionam:</strong> um monólito ou um
+microsserviço pode expor web services. CRUD pode existir dentro de
+ambos. Portanto, esses termos não são alternativas equivalentes: cada um
+descreve um aspecto diferente.</p>
+<hr />
+<h2 id="apis-conceitos-básicos">4. APIs: conceitos básicos</h2>
+<h3 id="o-que-é-uma-api">O que é uma API</h3>
+<p>API (<em>Application Programming Interface</em>) é uma <strong>interface
+que define como um software pode pedir dados ou serviços a outro</strong>,
+sem precisar conhecer a implementação interna. Funciona como um contrato:
+o que pode ser solicitado, em que formato e o que será devolvido.</p>
+<p><strong>Analogia:</strong> o cardápio e o garçom de um restaurante. Você
+pede pelo cardápio (contrato) e recebe o prato, sem saber como a cozinha
+funciona.</p>
+<p><strong>Exemplo:</strong> uma aplicação de agendamento consulta uma API
+para listar horários disponíveis; um site de compras consulta uma API de
+CEP para preencher o endereço.</p>
+<p>Neste guia, o foco é a <strong>Web API</strong>: aquela acessada pela
+rede por meio do protocolo HTTP.</p>
+<h3 id="http-request-e-response">HTTP: request e response</h3>
+<p>O HTTP segue o modelo <strong>requisição–resposta</strong>: o cliente
+envia uma <strong>request</strong> e o servidor devolve uma
+<strong>response</strong>. Cada par é independente (o protocolo é
+<em>stateless</em>, isto é, não guarda estado entre requisições).</p>
+<table>
+<thead>
+<tr><th>Elemento</th><th>Request (cliente → servidor)</th><th>Response (servidor → cliente)</th></tr>
+</thead>
+<tbody>
+<tr><td>Linha inicial</td><td>Método + URL (ex.: <code>GET /clientes/7</code>)</td><td>Código de status (ex.: <code>200 OK</code>)</td></tr>
+<tr><td>Headers (cabeçalhos)</td><td>Metadados: <code>Content-Type</code>, <code>Accept</code>, <code>Authorization</code></td><td>Metadados: <code>Content-Type</code>, <code>Location</code></td></tr>
+<tr><td>Body (corpo)</td><td>Opcional; dados enviados (ex.: JSON em um <code>POST</code>)</td><td>Opcional; dados devolvidos (ex.: JSON)</td></tr>
+</tbody>
+</table>
+<h4>Exemplo de request</h4>
+<pre><code>POST /api/agendamentos HTTP/1.1
+Host: api.exemplo.com
+Content-Type: application/json
+Authorization: Bearer SEU_TOKEN
+
+{"clienteId": 7, "horario": "2026-11-03T14:00"}</code></pre>
+<h4>Exemplo de response</h4>
+<pre><code>HTTP/1.1 201 Created
+Content-Type: application/json
+Location: /api/agendamentos/42
+
+{"id": 42, "clienteId": 7, "horario": "2026-11-03T14:00", "status": "AGENDADO"}</code></pre>
+<h3 id="métodos-http">Métodos HTTP</h3>
+<p>O método indica a <strong>intenção</strong> da requisição e se relaciona
+com as operações do CRUD.</p>
+<table>
+<thead>
+<tr><th>Método</th><th>Finalidade</th><th>CRUD</th><th>Exemplo</th></tr>
+</thead>
+<tbody>
+<tr><td><code>GET</code></td><td>Consultar um recurso ou uma lista</td><td>Read</td><td><code>GET /clientes</code></td></tr>
+<tr><td><code>POST</code></td><td>Criar um novo recurso</td><td>Create</td><td><code>POST /clientes</code></td></tr>
+<tr><td><code>PUT</code></td><td>Substituir um recurso por completo</td><td>Update</td><td><code>PUT /clientes/7</code></td></tr>
+<tr><td><code>PATCH</code></td><td>Alterar parte de um recurso</td><td>Update</td><td><code>PATCH /clientes/7</code></td></tr>
+<tr><td><code>DELETE</code></td><td>Excluir um recurso</td><td>Delete</td><td><code>DELETE /clientes/7</code></td></tr>
+</tbody>
+</table>
+<p><strong>Detalhe importante:</strong> <code>GET</code> não deve alterar dados
+no servidor. <code>GET</code>, <code>PUT</code> e <code>DELETE</code> são
+<em>idempotentes</em> (repetir a mesma requisição produz o mesmo estado final);
+<code>POST</code> normalmente não é.</p>
+<h3 id="códigos-de-status">Códigos de status</h3>
+<table>
+<thead>
+<tr><th>Faixa</th><th>Significado</th><th>Exemplos comuns</th></tr>
+</thead>
+<tbody>
+<tr><td>1xx</td><td>Informativo</td><td>—</td></tr>
+<tr><td>2xx</td><td>Sucesso</td><td><code>200 OK</code>, <code>201 Created</code>, <code>204 No Content</code></td></tr>
+<tr><td>3xx</td><td>Redirecionamento</td><td><code>301 Moved Permanently</code>, <code>304 Not Modified</code></td></tr>
+<tr><td>4xx</td><td>Erro do cliente</td><td><code>400 Bad Request</code>, <code>401 Unauthorized</code>, <code>403 Forbidden</code>, <code>404 Not Found</code>, <code>409 Conflict</code></td></tr>
+<tr><td>5xx</td><td>Erro do servidor</td><td><code>500 Internal Server Error</code>, <code>503 Service Unavailable</code></td></tr>
+</tbody>
+</table>
+<p><strong>Para lembrar:</strong> 4xx = o problema está na requisição; 5xx = o
+problema está no servidor.</p>
+<h3 id="api-rest">API REST</h3>
+<p><strong>REST</strong> (<em>Representational State Transfer</em>) é um
+<strong>estilo arquitetural</strong> para sistemas distribuídos, descrito por
+Roy Fielding em sua tese de doutorado (2000). Não é um protocolo nem um
+padrão formal: é um conjunto de restrições. Uma <strong>API REST</strong> é
+uma Web API construída segundo essas restrições.</p>
+<ul>
+<li><strong>Cliente–servidor:</strong> responsabilidades separadas.</li>
+<li><strong>Stateless:</strong> cada requisição carrega todas as informações necessárias; o servidor não guarda sessão do cliente entre chamadas.</li>
+<li><strong>Cacheável:</strong> respostas podem indicar se podem ser reutilizadas.</li>
+<li><strong>Interface uniforme:</strong> recursos identificados por URLs, manipulados por meio de representações (como JSON) e métodos HTTP com semântica padronizada.</li>
+<li><strong>Sistema em camadas:</strong> o cliente não precisa saber se fala direto com o servidor final ou com intermediários (proxy, gateway).</li>
+<li><strong>Código sob demanda (opcional):</strong> o servidor pode enviar código executável ao cliente.</li>
+</ul>
+<h4>Recursos e URLs</h4>
+<p>Em REST, a URL identifica um <strong>recurso</strong> (um substantivo), e o
+método HTTP indica a <strong>ação</strong>.</p>
+<table>
+<thead>
+<tr><th>Evite</th><th>Prefira</th></tr>
+</thead>
+<tbody>
+<tr><td><code>GET /buscarClientes</code></td><td><code>GET /clientes</code></td></tr>
+<tr><td><code>POST /criarCliente</code></td><td><code>POST /clientes</code></td></tr>
+<tr><td><code>POST /excluirCliente?id=7</code></td><td><code>DELETE /clientes/7</code></td></tr>
+</tbody>
+</table>
+<h3 id="api-restful">API RESTful</h3>
+<p>“RESTful” é o adjetivo para uma API que <strong>de fato segue os princípios
+REST</strong>. No uso cotidiano do mercado, <em>API REST</em> e <em>API
+RESTful</em> costumam ser tratadas como sinônimos. A distinção útil é
+conceitual: REST é o estilo; RESTful descreve uma implementação aderente a
+ele.</p>
+<p>Uma forma comum de medir essa aderência é o <strong>Modelo de Maturidade de
+Richardson</strong>:</p>
+<table>
+<thead>
+<tr><th>Nível</th><th>Característica</th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>Um único endpoint, usado como túnel para chamadas (estilo RPC)</td></tr>
+<tr><td>1</td><td>Recursos: cada entidade tem sua própria URL</td></tr>
+<tr><td>2</td><td>Uso correto dos métodos HTTP e dos códigos de status</td></tr>
+<tr><td>3</td><td>Controles de hipermídia (HATEOAS): a resposta traz links para as próximas ações possíveis</td></tr>
+</tbody>
+</table>
+<p>Na prática, a maioria das APIs chamadas de “REST” permanece no nível 2.
+Pela definição estrita de Fielding, a hipermídia (nível 3) é parte
+essencial do REST.</p>
+<blockquote>
+<p><strong>Para lembrar:</strong> API = contrato de comunicação; Web API = esse
+contrato sobre HTTP; REST = estilo arquitetural; RESTful = API que o segue de
+verdade. Request = pedido (método, URL, headers, body); response = resposta
+(status, headers, body).</p>
+</blockquote>
+<hr />
+<h2 id="repositório-e-controle-de-versão">5. Repositório e controle de
+versão</h2>
+<p>Um <strong>repositório</strong> é o local onde o código e,
+normalmente, o histórico de alterações de um projeto são armazenados e
+organizados.</p>
+<h3 id="repositório-remoto">Repositório remoto</h3>
+<p>Fica em uma plataforma online, permitindo compartilhar código,
+colaborar e manter uma cópia acessível pela equipe.</p>
+<p>Exemplos de plataformas: GitHub, GitLab e Bitbucket.</p>
+<h3 id="repositório-monorepo">Repositório monorepo</h3>
+<p>Em um <strong>monorepo</strong>, vários projetos ou partes de um
+sistema ficam no mesmo repositório. Por exemplo, o front-end e o
+back-end podem estar juntos.</p>
+<h3 id="repositórios-separados">Repositórios separados</h3>
+<p>O front-end e o back-end ficam em repositórios diferentes. Isso pode
+facilitar permissões, ciclos de publicação e organização de equipes
+independentes.</p>
+<p><strong>Importante:</strong> monorepo não significa necessariamente
+monólito. Monorepo é uma estratégia de organização do código; monólito e
+microsserviços descrevem a arquitetura da aplicação.</p>
+<h3 id="git">Git</h3>
+<p>O <strong>Git</strong> é um sistema de controle de versão que
+registra mudanças nos arquivos ao longo do tempo. Ele permite comparar
+versões, criar branches e integrar alterações.</p>
+<hr />
+<h2 id="cicd">6. CI/CD</h2>
+<p>CI/CD é um conjunto de práticas para automatizar partes do processo
+de integração, teste, entrega e implantação de software.</p>
+<h3 id="ci-continuous-integration-integração-contínua">CI — Continuous
+Integration (Integração Contínua)</h3>
+<p>É a prática de integrar mudanças de código frequentemente e executar
+verificações automatizadas, como compilação e testes.</p>
+<p><strong>Objetivo:</strong> detectar problemas cedo e manter o código
+integrado em boas condições.</p>
+<h3 id="cd-continuous-delivery-entrega-contínua">CD — Continuous
+Delivery (Entrega Contínua)</h3>
+<p>As alterações aprovadas pelos testes ficam preparadas para serem
+publicadas. A implantação em produção pode ainda exigir uma aprovação ou
+ação manual.</p>
+<h3 id="cd-continuous-deployment-implantação-contínua">CD — Continuous
+Deployment (Implantação Contínua)</h3>
+<p>As alterações que passam pelas verificações automatizadas são
+implantadas em produção automaticamente, sem uma aprovação manual para
+cada publicação.</p>
+<p><strong>Diferença essencial:</strong> - <strong>Continuous
+Delivery:</strong> deixa a versão pronta para publicação. -
+<strong>Continuous Deployment:</strong> publica automaticamente quando
+todos os critérios são atendidos.</p>
+<p>CI/CD não elimina a necessidade de testes, monitoramento ou boas
+práticas de segurança.</p>
+<hr />
+<h2 id="frameworks-x-bibliotecas">7. Frameworks x bibliotecas</h2>
+<h3 id="biblioteca">Biblioteca</h3>
+<p>Uma <strong>biblioteca</strong> é um conjunto de funções e
+ferramentas que você chama quando precisa resolver uma tarefa
+específica. Em geral, o desenvolvedor controla mais diretamente o fluxo
+da aplicação.</p>
+<p>Exemplo: usar uma biblioteca para validar dados, manipular datas ou
+fazer requisições HTTP.</p>
+<h3 id="framework">Framework</h3>
+<p>Um <strong>framework</strong> fornece uma estrutura e convenções para
+organizar e construir uma aplicação. Ele define parte do fluxo de
+execução e indica como os componentes devem se encaixar.</p>
+<p>Uma ideia útil para diferenciar: - <strong>Biblioteca:</strong> você
+chama a biblioteca quando precisa dela. - <strong>Framework:</strong> a
+aplicação segue a estrutura do framework, que pode chamar o seu código
+em momentos determinados.</p>
+<h3 id="exemplos-citados-no-mapa">Exemplos citados no mapa</h3>
+<ul>
+<li><strong>Node.js + Express:</strong> Express é um framework web para
+Node.js.</li>
+<li><strong>Ruby on Rails:</strong> framework web para Ruby.</li>
+<li><strong>Java + Spring Boot:</strong> Spring Boot facilita a criação
+e configuração de aplicações baseadas no ecossistema Spring.</li>
+<li><strong>.NET + ASP.NET Core:</strong> tecnologias usadas para criar
+aplicações e serviços web no ecossistema .NET.</li>
+</ul>
+<p><strong>Observação:</strong> Node.js é um ambiente de execução
+JavaScript, enquanto Express é um framework; Java é uma linguagem,
+enquanto Spring Boot é uma ferramenta do ecossistema Spring. Não são
+categorias equivalentes.</p>
+<hr />
+<h2 id="livros-recomendados">8. Livros recomendados</h2>
+<p>Os três livros que aparecem no mapa:</p>
+<ol type="1">
+<li><strong>Microsserviços Prontos para a Produção</strong> — referência
+para estudar decisões, práticas e desafios de microsserviços em
+ambientes reais.</li>
+<li><strong>Estruturas de Dados e Algoritmos com JavaScript</strong> —
+material para compreender estruturas de dados e algoritmos usando
+JavaScript.</li>
+<li><strong>APIs: A arte de criar e consumir APIs</strong> — referência
+para entender o desenho, a criação e o consumo de APIs.</li>
+</ol>
+<p>Use os livros de acordo com a etapa de estudo: fundamentos de
+algoritmos e estruturas de dados; comunicação por APIs; depois,
+arquitetura distribuída e microsserviços.</p>
+<hr />
+<h2 id="resumo-para-revisão">9. Resumo para revisão</h2>
+<ul>
+<li><strong>Domínio:</strong> regras e conceitos do negócio que a
+aplicação representa.</li>
+<li><strong>Front-end:</strong> interface e interação com o
+usuário.</li>
+<li><strong>Back-end:</strong> regras de negócio, processamento e acesso
+a dados.</li>
+<li><strong>Localhost:</strong> aplicação executando localmente no
+próprio computador.</li>
+<li><strong>Cloud:</strong> infraestrutura e serviços acessíveis pela
+internet.</li>
+<li><strong>Deploy:</strong> publicação de uma versão da aplicação em um
+ambiente.</li>
+<li><strong>CRUD:</strong> criar, ler, atualizar e excluir dados.</li>
+<li><strong>Web service:</strong> mecanismo/serviço de comunicação entre
+sistemas.</li>
+<li><strong>Microsserviços:</strong> arquitetura dividida em serviços
+menores com responsabilidades específicas.</li>
+<li><strong>Monólito:</strong> aplicação implantada como uma unidade
+principal.</li>
+<li><strong>Repositório:</strong> local de armazenamento e histórico do
+código.</li>
+<li><strong>Monorepo:</strong> vários projetos ou partes no mesmo
+repositório.</li>
+<li><strong>Git:</strong> controle de versão.</li>
+<li><strong>CI:</strong> integração frequente com verificações
+automatizadas.</li>
+<li><strong>Continuous Delivery:</strong> versão pronta para
+publicação.</li>
+<li><strong>Continuous Deployment:</strong> publicação automática após
+passar pelas verificações.</li>
+<li><strong>Biblioteca:</strong> conjunto de funcionalidades que o
+código utiliza.</li>
+<li><strong>Framework:</strong> estrutura e convenções para desenvolver
+uma aplicação.</li>
+</ul>
+<hr />
+<h2 id="glossário-de-siglas">10. Glossário de siglas</h2>
+<table style="width:97%;">
+<colgroup>
+<col style="width: 48%" />
+<col style="width: 48%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Sigla</th>
+<th style="text-align: left;">Significado</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">API</td>
+<td style="text-align: left;">Application Programming Interface</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">REST</td>
+<td style="text-align: left;">Representational State Transfer</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">URL</td>
+<td style="text-align: left;">Uniform Resource Locator</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">HATEOAS</td>
+<td style="text-align: left;">Hypermedia As The Engine Of Application State</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">AWS</td>
+<td style="text-align: left;">Amazon Web Services</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GCP</td>
+<td style="text-align: left;">Google Cloud Platform</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CI</td>
+<td style="text-align: left;">Continuous Integration</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CD</td>
+<td style="text-align: left;">Continuous Delivery ou Continuous
+Deployment, conforme o contexto</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CRUD</td>
+<td style="text-align: left;">Create, Read, Update, Delete</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">HTTP</td>
+<td style="text-align: left;">Hypertext Transfer Protocol</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">JSON</td>
+<td style="text-align: left;">JavaScript Object Notation</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">.NET</td>
+<td style="text-align: left;">Plataforma de desenvolvimento da
+Microsoft</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="perguntas-para-testar-o-conhecimento">11. Perguntas para testar o
+conhecimento</h2>
+<p>Escolha uma alternativa em cada uma das 15 questões. Ao final, você vê sua pontuação e os assuntos que precisa revisar.</p>
+<div class="quiz" id="quiz-top">
+<div class="quiz-progress"><span><strong id="quiz-count">0</strong> de 15 respondidas</span><div class="bar"><div id="quiz-bar"></div></div></div>
+<form id="quiz-form" onsubmit="return false"></form>
+<div class="quiz-actions"><button type="button" class="btn" id="quiz-submit" disabled>Ver resultado</button><button type="button" class="btn ghost" id="quiz-reset">Reiniciar</button><span class="hint" id="quiz-hint"></span></div>
+<div class="result" id="quiz-result" role="status" aria-live="polite" hidden></div>
+</div>
+<hr />
+<p><em>Material organizado a partir do mapa mental “Fundamentos de
+Aplicações Web”. As definições foram estruturadas e complementadas para
+facilitar a revisão.</em></p>
+
+</main>
+<footer>Material de estudo pessoal · Fundamentos de Aplicações Web</footer>
+<script>
+(function(){
+var r=document.documentElement,b=document.getElementById('theme-toggle');
+function show(){b.setAttribute('aria-checked',r.getAttribute('data-theme')==='dark'?'true':'false');}
+b.addEventListener('click',function(){
+var n=r.getAttribute('data-theme')==='dark'?'light':'dark';
+r.setAttribute('data-theme',n);
+try{localStorage.setItem('tema-guia',n);}catch(e){}
+show();});
+show();
+})();
+</script>
+<script>
+(function(){
+var Q=[
+{
+"q": "Um usuário clica em “Agendar” e o sistema precisa impedir dois agendamentos no mesmo horário. Onde essa regra de negócio é aplicada?",
+"o": [
+"No back-end, que recebe a requisição e aplica as regras do negócio",
+"Somente no front-end, pois é ele que exibe o botão e a tela ao usuário",
+"No localhost, pois é onde a aplicação é executada e testada",
+"No repositório remoto, a cada novo commit enviado pelo Git"
+],
+"c": 0,
+"t": "Client e Server (front-end e back-end)",
+"s": "momentos-e-partes-de-uma-aplicação"
+},
+{
+"q": "Em um sistema de agendamento, qual item pertence ao domínio da aplicação?",
+"o": [
+"Pipeline que executa os testes a cada alteração no código",
+"Regra de cancelamento com antecedência mínima do horário",
+"Configuração das variáveis de ambiente no servidor de produção",
+"Escolha entre usar monorepo ou repositórios separados"
+],
+"c": 1,
+"t": "Domínio da aplicação",
+"s": "domínio-da-aplicação"
+},
+{
+"q": "Qual afirmação sobre web services e microsserviços está correta?",
+"o": [
+"Todo web service é, por definição, um microsserviço independente",
+"Microsserviços eliminam a necessidade de comunicação entre os serviços da aplicação",
+"Um monólito não consegue expor web services a outros sistemas",
+"Web service descreve comunicação entre sistemas, não uma arquitetura"
+],
+"c": 3,
+"t": "Web services e microsserviços",
+"s": "web-services"
+},
+{
+"q": "Sobre a arquitetura monolítica, qual afirmação é verdadeira?",
+"o": [
+"Exige código desorganizado, sem separação de responsabilidades",
+"Só existe quando front-end e back-end ficam no mesmo repositório",
+"Pode ter módulos bem separados e ser implantada como uma unidade principal",
+"Impede, por definição, que o sistema exponha uma API HTTP"
+],
+"c": 2,
+"t": "Monólito",
+"s": "monólito"
+},
+{
+"q": "Qual alternativa relaciona corretamente as operações do CRUD aos métodos HTTP?",
+"o": [
+"Create: GET · Read: POST · Update: DELETE · Delete: PUT",
+"Create: PUT · Read: GET · Update: POST · Delete: PATCH",
+"Create: POST · Read: DELETE · Update: GET · Delete: PUT",
+"Create: POST · Read: GET · Update: PUT · Delete: DELETE"
+],
+"c": 3,
+"t": "CRUD e métodos HTTP",
+"s": "métodos-http"
+},
+{
+"q": "Uma equipe guarda front-end e back-end no mesmo repositório Git. O que isso permite concluir?",
+"o": [
+"Que a aplicação é um monólito, já que todo o código está unificado",
+"Que o código usa a estratégia monorepo, sem definir a arquitetura",
+"Que a aplicação foi dividida em microsserviços totalmente independentes",
+"Que é obrigatório usar integração contínua e entrega automática"
+],
+"c": 1,
+"t": "Monorepo x monólito",
+"s": "repositório-monorepo"
+},
+{
+"q": "Qual situação descreve a Integração Contínua (CI), e não a entrega ou a implantação contínuas?",
+"o": [
+"Uma versão aprovada fica pronta, aguardando um clique para ir à produção",
+"Toda alteração aprovada nos testes é publicada em produção sem intervenção",
+"A cada mudança integrada, compilação e testes rodam e apontam falhas cedo",
+"Front-end e back-end são publicados juntos na plataforma de nuvem"
+],
+"c": 2,
+"t": "CI: Integração Contínua",
+"s": "ci-continuous-integration-integração-contínua"
+},
+{
+"q": "Os testes automáticos passam e a versão fica pronta, mas um gerente aprova a publicação manualmente. Que prática é essa?",
+"o": [
+"Continuous Deployment, pois a publicação ocorre em produção após o teste",
+"Continuous Integration, pois os testes passaram com sucesso",
+"Continuous Delivery, pois a versão fica pronta para publicar",
+"Nenhuma delas, pois CI/CD exige que tudo seja automático"
+],
+"c": 2,
+"t": "Continuous Delivery x Deployment",
+"s": "cd-continuous-delivery-entrega-contínua"
+},
+{
+"q": "Qual afirmação diferencia corretamente biblioteca de framework?",
+"o": [
+"Na biblioteca, o código dela define o fluxo e chama o código do desenvolvedor",
+"O framework entrega apenas funções soltas, sem convenções nem estrutura prévia definida",
+"No framework, a aplicação segue a estrutura dele, que pode chamar o seu código",
+"A biblioteca impõe a organização das pastas e o ciclo de vida da aplicação"
+],
+"c": 2,
+"t": "Biblioteca x framework",
+"s": "frameworks-x-bibliotecas"
+},
+{
+"q": "Qual alternativa descreve melhor o deploy de uma aplicação?",
+"o": [
+"Rodar a aplicação no localhost e conferir que ela abre no navegador local",
+"Registrar as mudanças no Git e enviá-las ao repositório remoto da equipe",
+"Dividir o sistema em serviços menores que possam escalar de forma independente",
+"Disponibilizar a versão em um ambiente, com banco e variáveis configurados"
+],
+"c": 3,
+"t": "Deploy e Cloud",
+"s": "deploy"
+},
+{
+"q": "Qual alternativa descreve corretamente uma Web API?",
+"o": [
+"Contrato de comunicação entre softwares acessado pela rede via protocolo HTTP",
+"Interface visual com botões e formulários usada pelo usuário no navegador",
+"Banco de dados que armazena as requisições recebidas pelo servidor",
+"Conjunto de funções chamadas localmente, sem comunicação pela rede"
+],
+"c": 0,
+"t": "O que é uma API",
+"s": "o-que-é-uma-api"
+},
+{
+"q": "Qual item pertence à response HTTP, e não à request?",
+"o": [
+"Método HTTP, como GET ou POST",
+"Código de status, como 404 Not Found",
+"Header Authorization com o token do usuário",
+"URL do recurso, como /clientes/7"
+],
+"c": 1,
+"t": "HTTP: request e response",
+"s": "http-request-e-response"
+},
+{
+"q": "Qual afirmação sobre REST e RESTful está correta?",
+"o": [
+"REST é um protocolo oficial de rede; RESTful é a versão mais nova",
+"RESTful é uma linguagem de programação; REST é o framework dela",
+"REST exige JSON como formato; RESTful aceita XML e outros",
+"REST é um estilo arquitetural; RESTful descreve uma API aderente a ele"
+],
+"c": 3,
+"t": "API REST x RESTful",
+"s": "api-restful"
+},
+{
+"q": "Qual cenário viola a restrição stateless de uma API REST?",
+"o": [
+"O servidor depende de uma sessão em memória para identificar o cliente",
+"O cliente envia o token de autenticação em um header a cada requisição feita",
+"A resposta informa se o conteúdo pode ou não ser reutilizado em cache",
+"O cliente fala com um gateway sem precisar saber que ele existe"
+],
+"c": 0,
+"t": "API REST (restrições)",
+"s": "api-rest"
+},
+{
+"q": "Uma API usa várias URLs, métodos e status corretos, mas não devolve links para as próximas ações. Qual é o nível dela no Modelo de Richardson?",
+"o": [
+"Nível 1, pois só separa os recursos em URLs diferentes",
+"Nível 3, pois já segue todos os princípios do estilo REST",
+"Nível 0, pois usa um único endpoint como túnel de chamadas",
+"Nível 2, pois usa métodos e status, mas não usa HATEOAS"
+],
+"c": 3,
+"t": "Modelo de Maturidade de Richardson",
+"s": "api-restful"
+}
+];
+var form=document.getElementById('quiz-form'),res=document.getElementById('quiz-result'),
+btn=document.getElementById('quiz-submit'),rst=document.getElementById('quiz-reset'),
+cnt=document.getElementById('quiz-count'),bar=document.getElementById('quiz-bar'),
+hint=document.getElementById('quiz-hint'),box=document.getElementById('quiz-top');
+var A=[],done=false;
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function build(){
+ var h='';
+ Q.forEach(function(q,i){
+  h+='<fieldset class="q"><legend>'+(i+1)+'. '+q.q+'</legend>';
+  shuffle(q.o.map(function(_,j){return j;})).forEach(function(j){
+   h+='<label class="opt" data-j="'+j+'"><input type="radio" name="q'+i+'" value="'+j+'"><span>'+q.o[j]+'</span></label>';
+  });
+  h+='</fieldset>';
+ });
+ form.innerHTML=h;
+}
+function lab(fs,j){return fs.querySelector('.opt[data-j="'+j+'"]');}
+function answered(){return A.filter(function(x){return x!==null;}).length;}
+function update(){
+ var n=answered();
+ cnt.textContent=n;
+ bar.style.width=(n/Q.length*100)+'%';
+ btn.disabled=done||n<Q.length;
+ hint.textContent=done?'':(n<Q.length?'Responda todas as questões para ver o resultado.':'Tudo respondido! Clique em “Ver resultado”.');
+}
+function reset(){
+ done=false;A=Q.map(function(){return null;});
+ box.classList.remove('done');res.hidden=true;res.innerHTML='';
+ build();update();
+}
+form.addEventListener('change',function(e){
+ var t=e.target;if(done||t.type!=='radio')return;
+ var i=+t.name.slice(1);A[i]=+t.value;
+ t.closest('fieldset').querySelectorAll('.opt').forEach(function(l){l.classList.remove('sel');});
+ t.closest('.opt').classList.add('sel');
+ update();
+});
+btn.addEventListener('click',function(){
+ if(answered()<Q.length)return;
+ done=true;box.classList.add('done');
+ var wrong=[],score=0;
+ form.querySelectorAll('.q').forEach(function(fs,i){
+  lab(fs,Q[i].c).classList.add('right');
+  if(A[i]===Q[i].c){score++;}else{wrong.push(i);lab(fs,A[i]).classList.add('wrong');}
+  fs.querySelectorAll('input').forEach(function(x){x.disabled=true;});
+ });
+ var pct=Math.round(score/Q.length*100),
+ msg=score===Q.length?'Excelente! Você acertou todas as questões.':
+  score>=12?'Muito bom! Falta pouco para dominar o conteúdo.':
+  score>=8?'Bom caminho! Revise os assuntos abaixo e tente novamente.':
+  'Vale a pena reler o conteúdo com calma e refazer o questionário.';
+ var h='<div class="score">'+score+' / '+Q.length+' <small>('+pct+'%)</small></div><p>'+msg+'</p>';
+ if(wrong.length){
+  var map={},order=[];
+  wrong.forEach(function(i){var k=Q[i].s;if(!map[k]){map[k]={t:Q[i].t,qs:[]};order.push(k);}map[k].qs.push(i+1);});
+  h+='<h3>Assuntos para revisar</h3><ul>';
+  order.forEach(function(k){h+='<li><a href="#'+k+'">'+map[k].t+'</a> <small>(questão '+map[k].qs.join(', ')+')</small></li>';});
+  h+='</ul><h3>Questões que você errou</h3>';
+  wrong.forEach(function(i){
+   h+='<div class="miss"><strong>Questão '+(i+1)+'.</strong> '+Q[i].q+'<br>Sua resposta: '+Q[i].o[A[i]]+'<br><strong>Correta:</strong> '+Q[i].o[Q[i].c]+'</div>';
+  });
+ }
+ res.innerHTML=h;res.hidden=false;update();
+ res.scrollIntoView({behavior:'smooth',block:'start'});
+});
+rst.addEventListener('click',function(){
+ reset();box.scrollIntoView({behavior:'smooth',block:'start'});
+});
+reset();
+})();
+</script>
+</body>
+</html>
